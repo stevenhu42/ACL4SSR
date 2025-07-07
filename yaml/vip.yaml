@@ -1,0 +1,368 @@
+# Proxy providers (you need to add your subscription URLs here)
+proxy-providers:
+  "Tag of the provider":
+    type: http
+    url: "YOUR_SUBSCRIPTION_URL_HERE"
+    interval: 3600
+    health-check:
+      enable: true
+      interval: 300
+      url: http://www.gstatic.com/generate_204
+
+# Clash configuration based on ACL4SSR rules
+port: 7890
+socks-port: 7891
+redir-port: 7892
+mixed-port: 7893
+
+allow-lan: true
+mode: rule
+log-level: info
+
+external-controller: 0.0.0.0:9090
+
+# DNS configuration
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - 223.5.5.5
+  fake-ip-filter:
+    - +.lan
+    - +.local
+    - geosite:cn
+
+# Proxy groups
+proxy-groups:
+  - name: 🚀 节点选择
+    type: select
+    proxies:
+      - ♻️ 自动选择
+      - 🇭🇰 香港节点
+      - 🇺🇲 美国节点
+      - 🇩🇪 德国节点
+      - 🇹🇼 台湾节点
+      - 🇸🇬 狮城节点
+      - 🇯🇵 日本节点
+      - 🇰🇷 韩国节点
+      - ☑️ 手动切换
+      - DIRECT
+
+  - name: ☑️ 手动切换
+    type: select
+    use:
+      - all-proxies
+
+  - name: ♻️ 自动选择
+    type: url-test
+    proxies:
+      - 🇭🇰 香港节点
+      - 🇺🇲 美国节点
+      - 🇩🇪 德国节点
+      - 🇹🇼 台湾节点
+      - 🇸🇬 狮城节点
+      - 🇯🇵 日本节点
+      - 🇰🇷 韩国节点
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+
+  - name: 🤖 OpenAi
+    type: select
+    proxies:
+      - 🚀 节点选择
+      - ♻️ 自动选择
+      - 🇺🇲 美国节点
+      - 🇩🇪 德国节点
+      - 🇹🇼 台湾节点
+      - 🇸🇬 狮城节点
+      - 🇯🇵 日本节点
+      - 🇰🇷 韩国节点
+      - 🎯 全球直连
+
+  - name: 🎯 全球直连
+    type: select
+    proxies:
+      - DIRECT
+      - 🚀 节点选择
+      - ♻️ 自动选择
+
+  - name: 🛑 全球拦截
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+
+  - name: 🐟 漏网之鱼
+    type: select
+    proxies:
+      - 🚀 节点选择
+      - 🎯 全球直连
+      - ♻️ 自动选择
+    use:
+      - all-proxies
+
+  - name: 🇭🇰 香港节点
+    type: url-test
+    filter: "港|HK|hk|Hong Kong|HongKong|hongkong|HKG"
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - all-proxies
+
+  - name: 🇺🇲 美国节点
+    type: url-test
+    filter: "美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States|ATL|BUF|DFW|EWR|IAD|LAX|MCI|MIA|ORD|PHX|PDX|SEA|SJC"
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 150
+    use:
+      - all-proxies
+
+  - name: 🇩🇪 德国节点
+    type: url-test
+    filter: "德|DE|de|De"
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - all-proxies
+
+  - name: 🇹🇼 台湾节点
+    type: url-test
+    filter: "台|新北|彰化|TW|Taiwan|TPE|KHH"
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - all-proxies
+
+  - name: 🇸🇬 狮城节点
+    type: url-test
+    filter: "新加坡|坡|狮城|SG|Singapore|SIN"
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - all-proxies
+
+  - name: 🇯🇵 日本节点
+    type: url-test
+    filter: "日本|川日|东京|大阪|泉日|埼玉|沪日|深日|[^-]日|JP|Japan|Tokyo|NRT|KIX"
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - all-proxies
+
+  - name: 🇰🇷 韩国节点
+    type: url-test
+    filter: "KR|Korea|KOR|Seoul|首尔|春川|韩|韓|ICN"
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - all-proxies
+
+# Rule providers
+rule-providers:
+  LocalAreaNetwork:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/LocalAreaNetwork.list
+    path: ./ruleset/LocalAreaNetwork.yaml
+    interval: 86400
+
+  UnBan:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/UnBan.list
+    path: ./ruleset/UnBan.yaml
+    interval: 86400
+
+  BanAD:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list
+    path: ./ruleset/BanAD.yaml
+    interval: 86400
+
+  BanProgramAD:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanProgramAD.list
+    path: ./ruleset/BanProgramAD.yaml
+    interval: 86400
+
+  Adobe:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/adobe.list
+    path: ./ruleset/Adobe.yaml
+    interval: 86400
+
+  GoogleCN:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/GoogleCN.list
+    path: ./ruleset/GoogleCN.yaml
+    interval: 86400
+
+  SteamCN:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/SteamCN.list
+    path: ./ruleset/SteamCN.yaml
+    interval: 86400
+
+  Telegram:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Telegram.list
+    path: ./ruleset/Telegram.yaml
+    interval: 86400
+
+  OpenAi:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/OpenAi.list
+    path: ./ruleset/OpenAi.yaml
+    interval: 86400
+
+  AI:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/juewuy/ShellClash/master/rules/ai.list
+    path: ./ruleset/AI.yaml
+    interval: 86400
+
+  Copilot:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/Copilot.list
+    path: ./ruleset/Copilot.yaml
+    interval: 86400
+
+  GithubCopilot:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/GithubCopilot.list
+    path: ./ruleset/GithubCopilot.yaml
+    interval: 86400
+
+  Claude:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/Claude.list
+    path: ./ruleset/Claude.yaml
+    interval: 86400
+
+  Gemini:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/stevenhu42/ACL4SSR/refs/heads/main/Clash/Gemini.list
+    path: ./ruleset/Gemini.yaml
+    interval: 86400
+
+  Cursor:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/stevenhu42/ACL4SSR/refs/heads/main/Clash/Cursor.list
+    path: ./ruleset/Cursor.yaml
+    interval: 86400
+
+  ProxyMedia:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyMedia.list
+    path: ./ruleset/ProxyMedia.yaml
+    interval: 86400
+
+  ProxyGFWlist:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyGFWlist.list
+    path: ./ruleset/ProxyGFWlist.yaml
+    interval: 86400
+
+  CMBlog:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/CMBlog.list
+    path: ./ruleset/CMBlog.yaml
+    interval: 86400
+
+  Direct:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/UlinoyaPed/ShellClash/dev/lists/direct.list
+    path: ./ruleset/Direct.yaml
+    interval: 86400
+
+  Apple:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Apple.list
+    path: ./ruleset/Apple.yaml
+    interval: 86400
+
+  ChinaIp:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaIp.list
+    path: ./ruleset/ChinaIp.yaml
+    interval: 86400
+
+  ChinaDomain:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaDomain.list
+    path: ./ruleset/ChinaDomain.yaml
+    interval: 86400
+
+  ChinaCompanyIp:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaCompanyIp.list
+    path: ./ruleset/ChinaCompanyIp.yaml
+    interval: 86400
+
+  Download:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Download.list
+    path: ./ruleset/Download.yaml
+    interval: 86400
+
+# Rules
+rules:
+  - RULE-SET,LocalAreaNetwork,🎯 全球直连
+  - RULE-SET,UnBan,🎯 全球直连
+  - RULE-SET,BanAD,🛑 全球拦截
+  - RULE-SET,BanProgramAD,🛑 全球拦截
+  - RULE-SET,Adobe,🛑 全球拦截
+  - RULE-SET,GoogleCN,🎯 全球直连
+  - RULE-SET,SteamCN,🎯 全球直连
+  - RULE-SET,Telegram,🚀 节点选择
+  - RULE-SET,OpenAi,🤖 OpenAi
+  - RULE-SET,AI,🤖 OpenAi
+  - RULE-SET,Copilot,🤖 OpenAi
+  - RULE-SET,GithubCopilot,🤖 OpenAi
+  - RULE-SET,Claude,🤖 OpenAi
+  - RULE-SET,Gemini,🤖 OpenAi
+  - RULE-SET,Cursor,🤖 OpenAi
+  - RULE-SET,ProxyMedia,🚀 节点选择
+  - RULE-SET,ProxyGFWlist,🚀 节点选择
+  - RULE-SET,CMBlog,🚀 节点选择
+  - RULE-SET,Direct,🎯 全球直连
+  - RULE-SET,Apple,🎯 全球直连
+  - RULE-SET,ChinaIp,🎯 全球直连
+  - RULE-SET,ChinaDomain,🎯 全球直连
+  - RULE-SET,ChinaCompanyIp,🎯 全球直连
+  - RULE-SET,Download,🎯 全球直连
+  - GEOIP,LAN,🎯 全球直连
+  - GEOIP,CN,🎯 全球直连
+  - MATCH,🐟 漏网之鱼
